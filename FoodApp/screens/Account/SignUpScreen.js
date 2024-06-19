@@ -18,7 +18,7 @@ export default function SignUpScreen() {
     const picker = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted')
-            Alert.alert("iCourseApp", "Permissions Denied!");
+            Alert.alert("FoodApp", "Permissions Denied!");
         else {
             let res = await ImagePicker.launchImageLibraryAsync();
             if (!res.canceled) {
