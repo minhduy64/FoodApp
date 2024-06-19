@@ -14,7 +14,6 @@ export default PaymentWebView = ({route}) => {
   }
   const onConfirmPressed = () => {
     navigation.navigate("Home")
-    //gọi Api kt thành công chưa
     Alert.alert("Payment sucessful")
   }
 

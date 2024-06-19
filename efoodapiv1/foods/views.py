@@ -13,6 +13,14 @@ class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
 
+    @action(methods=['get'], url_path='Stores', detail=True)
+    def get_menu_items(self, request, pk):
+        store = Store.objects.filter(categories_id=pk)
+        print(store)
+
+        return Response(serializers.StoreSerializer(store, many=True).data,
+                        status=status.HTTP_200_OK)
+
 
 class StoreViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Store.objects.filter(active=True)
@@ -32,6 +40,14 @@ class StoreViewSet(viewsets.ViewSet, generics.ListAPIView):
                 queryset = queryset.filter(categories_id=cate_id)
 
         return queryset
+
+    @action(methods=['get'], url_path='search_stores', detail=False)
+    def search_stores(self, request):
+        query = request.query_params.get('q', '')
+        print(query)
+        stores = Store.objects.filter(name__icontains=query)
+        serializer = serializers.StoreSerializer(stores, many=True)
+        return Response(serializer.data)
 
     @action(methods=['get'], url_path='menu_items', detail=True)
     def get_menu_items(self, request, pk):
@@ -189,7 +205,8 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView):
     def create_orders(self, request):
         user_id = request.data.get('user')
         store_id = request.data.get('store')
-        menu_items = request.data.get('menu_items')  # List các menu item được chọn
+        menu_items = request.data.get('menu_items')
+        menu_items = request.data.get('menu_items')
         total_price = request.data.get('total_price')
         delivery_fee = request.data.get('delivery_fee')
         payment_method = request.data.get('payment_method')
@@ -204,24 +221,23 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView):
             total_price=total_price,
             delivery_fee=delivery_fee,
             payment_method=payment_method,
-            status=status_orders  # Trạng thái mặc định khi tạo order là pending
+            status=status_orders
         )
 
         order_items = []
         for item_data in menu_items:
             menu_item_id = item_data.get('menu_item')
             quantity = item_data.get('quantity')
-            # Tạo OrderItem và thêm vào order_items
             order_item = OrderItem.objects.create(
                 menu_item_id=menu_item_id,
                 quantity=quantity,
-                order_id=order.id  # Gán order cho OrderItem ngay khi tạo
+                order_id=order.id
             )
             order_items.append(order_item)
         return Response(serializers.OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
-#MOMO
+# MOMO
 import uuid
 import hmac
 import hashlib
@@ -252,7 +268,7 @@ class MomoViewSet(viewsets.ViewSet):
                 except Order.DoesNotExist:
                     return JsonResponse({'error': 'Order not found'}, status=404)
 
-                expected_amount = order.total_price+order.delivery_fee
+                expected_amount = order.total_price + order.delivery_fee
                 if amount != expected_amount:
                     return JsonResponse({'error': 'Amount does not match'}, status=400)
 
@@ -324,4 +340,3 @@ class MomoViewSet(viewsets.ViewSet):
                 return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         else:
             return JsonResponse({'error': 'Invalid request method'}, status=405)
-

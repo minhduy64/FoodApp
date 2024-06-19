@@ -10,7 +10,7 @@ import { UserApi } from "../../configs/APis/UserApi";
 import { PayApis } from "../../configs/APis/PayApi";
 
 
-export default function CartScreen({route = ""}) {
+export default function CartScreen({route}) {
     const store = route.params.store
     const cart = route.params.cart
     const [deliveryFee, setDeliveryFee] = useState(5);

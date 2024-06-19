@@ -7,10 +7,8 @@ export default function DishType({ items, onUpdateQuantity }) {
     const { width: contentWidth } = useWindowDimensions();
     const uniqueTypes = [...new Set(items.menuItems.map(item => item.type))];
 
-// Tạo một đối tượng lưu trữ danh sách mục theo loại
     const itemsByType = {};
 
-// Lọc và lưu trữ các mục vào đối tượng itemsByType
     uniqueTypes.forEach(type => {
         itemsByType[type] = items.menuItems.filter(item => item.type === type);
     });
