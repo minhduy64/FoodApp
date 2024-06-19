@@ -32,7 +32,7 @@ class StoreSerializer(ItemSerializer):
     class Meta:
         model = Store
         fields = ['id', 'name', 'description', 'image', 'location', 'longitude', 'latitude', 'approved',
-                  'category_name']
+                  'category_name', 'rating']
 
 
 class MenuItemSearchSerializer(ItemSerializer):

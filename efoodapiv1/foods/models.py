@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Avg
 
 
 class User(AbstractUser):
@@ -48,6 +49,16 @@ class Store(BaseModel):
     longitude = models.CharField(max_length=255)
     latitude = models.CharField(max_length=255)
     approved = models.BooleanField(default=False)
+
+    @property
+    def rating(self):
+        reviews_count = self.reviews.count()
+        if reviews_count > 0:
+            avg_rating = self.reviews.aggregate(Avg('rating'))['rating__avg']
+            return round(avg_rating, 1)
+        else:
+            return 0.0
+
 
     def __str__(self):
         return f"{self.name} - {self.location}"
